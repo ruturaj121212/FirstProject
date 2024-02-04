@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses Tracker</title>
+</head>
+<body>
+    <form action="">
+        <label for="amount">Amount</label>
+        <input type="text" id="amount" name="amount">
+        
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description">
+            
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            <option value="Movie">Movie</option>
+            <option value="Food">Food</option>
+            <option value="Fuel">Fuel</option>
+        </select>
+       <button type="submit">Add Expenses</button>
+    </form>
+    <ul id="expensesList"></ul>
+
+    <script>
+        const form = document.querySelector('form');
+        const ul = document.getElementById('expensesList');
+
+
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+
+            const formElement = form.elements;
+            let obj = {};
+            for (let i = 0; i < formElement.length; i++) {
+                obj[formElement[i].id] = formElement[i].value;
+            }
+
+            localStorage.setItem(Math.random(), JSON.stringify(obj));
+            displayLocalStorageValues();
+        });
+
+        // Function to display all local storage values
+        function displayLocalStorageValues() {
+            ul.innerHTML = '';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const data = JSON.parse(localStorage.getItem(key));
+
+                const li = document.createElement('li');
+                li.innerHTML = `${data.amount} ${data.category} ${data.description} 
+                                <button class='delete' data-key='${key}' type ='button'>Delete</button> 
+                                <button class='edit' data-key='${key}' type ='button'>Edit</button>`;
+                ul.appendChild(li);
+            }
+        }
+
+        ul.addEventListener('click', function(event) {
+            const target = event.target;
+
+            if (target.classList.contains('delete')) {
+                const key = target.getAttribute('data-key');
+                localStorage.removeItem(key);
+                displayLocalStorageValues();
+            } else if (target.classList.contains('edit')) {
+                const key = target.getAttribute('data-key');
+                const data = JSON.parse(localStorage.getItem(key));
+
+                form.elements.amount.value = data.amount;
+                form.elements.description.value = data.description;
+                form.elements.category.value = data.category;
+
+               
+                localStorage.removeItem(key);
+                displayLocalStorageValues();
+            }
+        });
+
+        
+        displayLocalStorageValues();
+    </script>
+</body>
+</html>
